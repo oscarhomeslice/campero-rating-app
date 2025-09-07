@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campero Rating Competition - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', Arial, Helvetica, sans-serif;
+        }
+        .font-game {
+            font-family: 'Baloo 2', 'Poppins', sans-serif;
+        }
+        .bg-campero-gradient {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
+        }
+        .bg-secondary-gradient {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0f766e 100%);
+        }
+        .btn-game {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: scale(1);
+            transition: all 0.2s ease;
+        }
+        .btn-game:hover {
+            transform: scale(1.05);
+        }
+        .btn-game:active {
+            transform: scale(0.95);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
+        }
+        .card-game {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .slider-track {
+            width: 100%;
+            height: 0.75rem;
+            background: linear-gradient(to right, #fecaca 0%, #fed7aa 50%, #d1fae5 100%);
+            border-radius: 0.5rem;
+            appearance: none;
+            cursor: pointer;
+        }
+        .slider-track::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-teal-50">
+    <div class="min-h-screen p-4 pb-24">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-game font-bold bg-gradient-to-r from-orange-500 via-red-500 to-red-600 bg-clip-text text-transparent mb-2">
+                🌮 Campero Competition 🌮
+            </h1>
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 inline-block">
+                <p class="text-lg font-semibold text-gray-800">Day 1 of 7</p>
+            </div>
+        </header>
+
+        <!-- Welcome Section -->
+        <div class="max-w-md mx-auto mb-8">
+            <div class="card-game text-center">
+                <h2 class="text-2xl font-game font-bold text-gray-800 mb-2">
+                    ¡Hola, Food Lover! 👋
+                </h2>
+                <p class="text-gray-600 mb-4">
+                    Ready to taste some amazing camperos today?
+                </p>
+                
+                <!-- Progress Bar -->
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Today's Progress</span>
+                        <span>2/5</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-campero-gradient h-3 rounded-full transition-all duration-500" style="width: 40%"></div>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-gray-500">
+                    3 camperos left to rate!
+                </p>
+            </div>
+        </div>
+
+        <!-- Today's Restaurant -->
+        <div class="max-w-md mx-auto mb-8">
+            <div class="card-game">
+                <h3 class="text-xl font-game font-bold text-gray-800 mb-3">
+                    📍 Today's Location
+                </h3>
+                <div class="bg-white/30 rounded-xl p-4">
+                    <h4 class="font-semibold text-gray-800">El Campero Dorado</h4>
+                    <p class="text-sm text-gray-600 mb-2">Calle Principal 123</p>
+                    <p class="text-sm text-gray-600">🕐 Meeting at 12:30 PM</p>
+                    <button class="mt-3 text-sm text-orange-600 hover:text-orange-700 font-medium">
+                        📍 View on Map
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campero Cards -->
+        <div class="max-w-md mx-auto space-y-4 mb-8">
+            <h3 class="text-xl font-game font-bold text-center text-gray-800 mb-4">
+                Rate Today's Camperos
+            </h3>
+            
+            <div class="card-game">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Campero Clásico</h4>
+                        <p class="text-sm text-gray-600">✅ Rated</p>
+                    </div>
+                    <button class="px-4 py-2 rounded-lg font-semibold bg-green-100 text-green-700 cursor-default">
+                        Done
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-game">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Campero Especial</h4>
+                        <p class="text-sm text-gray-600">✅ Rated</p>
+                    </div>
+                    <button class="px-4 py-2 rounded-lg font-semibold bg-green-100 text-green-700 cursor-default">
+                        Done
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-game">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Campero Supremo</h4>
+                        <p class="text-sm text-gray-600">⏳ Pending</p>
+                    </div>
+                    <button class="btn-game btn-primary hover:scale-105" onclick="showRatingModal('Campero Supremo')">
+                        Rate
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-game">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Campero Vegetariano</h4>
+                        <p class="text-sm text-gray-600">⏳ Pending</p>
+                    </div>
+                    <button class="btn-game btn-primary hover:scale-105" onclick="showRatingModal('Campero Vegetariano')">
+                        Rate
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-game">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Campero Picante</h4>
+                        <p class="text-sm text-gray-600">⏳ Pending</p>
+                    </div>
+                    <button class="btn-game btn-primary hover:scale-105" onclick="showRatingModal('Campero Picante')">
+                        Rate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 p-4">
+            <div class="flex justify-around max-w-md mx-auto">
+                <button class="flex flex-col items-center space-y-1 text-orange-600">
+                    <span class="text-xl">🏠</span>
+                    <span class="text-xs font-medium">Home</span>
+                </button>
+                <button class="flex flex-col items-center space-y-1 text-gray-400 hover:text-gray-600">
+                    <span class="text-xl">🏆</span>
+                    <span class="text-xs font-medium">Ranking</span>
+                </button>
+                <button class="flex flex-col items-center space-y-1 text-gray-400 hover:text-gray-600">
+                    <span class="text-xl">👤</span>
+                    <span class="text-xs font-medium">Profile</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Rating Modal (Hidden by default) -->
+    <div id="ratingModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="sticky top-0 bg-campero-gradient text-white p-6 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-game font-bold">Rate Campero</h2>
+                        <p class="text-orange-100" id="camperoName">Campero Name</p>
+                    </div>
+                    <button onclick="hideRatingModal()" class="text-white/80 hover:text-white text-2xl">
+                        ✕
+                    </button>
+                </div>
+                
+                <!-- Average Score Display -->
+                <div class="mt-4 text-center">
+                    <div class="text-3xl font-bold" id="averageScore">5/10</div>
+                    <div class="text-sm text-orange-100">Overall Score</div>
+                </div>
+            </div>
+
+            <!-- Rating Form -->
+            <div class="p-6">
+                <!-- Taste Slider -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="text-sm font-semibold text-gray-700">👅 Taste</label>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl" id="tasteEmoji">🙂</span>
+                            <span class="text-lg font-bold text-orange-600 min-w-[2rem] text-center" id="tasteValue">5</span>
+                        </div>
+                    </div>
+                    <input type="range" min="1" max="10" value="5" class="slider-track" id="tasteSlider" oninput="updateSlider('taste', this.value)">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Poor</span>
+                        <span>Excellent</span>
+                    </div>
+                </div>
+
+                <!-- Texture Slider -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="text-sm font-semibold text-gray-700">🤏 Texture</label>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl" id="textureEmoji">🙂</span>
+                            <span class="text-lg font-bold text-orange-600 min-w-[2rem] text-center" id="textureValue">5</span>
+                        </div>
+                    </div>
+                    <input type="range" min="1" max="10" value="5" class="slider-track" id="textureSlider" oninput="updateSlider('texture', this.value)">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Poor</span>
+                        <span>Excellent</span>
+                    </div>
+                </div>
+
+                <!-- Ingredients Slider -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="text-sm font-semibold text-gray-700">🥬 Ingredients</label>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl" id="ingredientsEmoji">🙂</span>
+                            <span class="text-lg font-bold text-orange-600 min-w-[2rem] text-center" id="ingredientsValue">5</span>
+                        </div>
+                    </div>
+                    <input type="range" min="1" max="10" value="5" class="slider-track" id="ingredientsSlider" oninput="updateSlider('ingredients', this.value)">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Poor</span>
+                        <span>Excellent</span>
+                    </div>
+                </div>
+
+                <!-- Presentation Slider -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="text-sm font-semibold text-gray-700">🎨 Presentation</label>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl" id="presentationEmoji">🙂</span>
+                            <span class="text-lg font-bold text-orange-600 min-w-[2rem] text-center" id="presentationValue">5</span>
+                        </div>
+                    </div>
+                    <input type="range" min="1" max="10" value="5" class="slider-track" id="presentationSlider" oninput="updateSlider('presentation', this.value)">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Poor</span>
+                        <span>Excellent</span>
+                    </div>
+                </div>
+
+                <!-- Bonus Slider -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="text-sm font-semibold text-gray-700">⭐ Bonus Points</label>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl" id="bonusEmoji">🙂</span>
+                            <span class="text-lg font-bold text-orange-600 min-w-[2rem] text-center" id="bonusValue">5</span>
+                        </div>
+                    </div>
+                    <input type="range" min="1" max="10" value="5" class="slider-track" id="bonusSlider" oninput="updateSlider('bonus', this.value)">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Poor</span>
+                        <span>Excellent</span>
+                    </div>
+                </div>
+
+                <!-- Emoji Picker -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">🎭 Your Reaction</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="selectEmoji('😍')" class="text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all">😍</button>
+                        <button onclick="selectEmoji('🤤')" class="text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all">🤤</button>
+                        <button onclick="selectEmoji('😋')" class="text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all bg-orange-100 scale-110 shadow-lg">😋</button>
+                        <button onclick="selectEmoji('👌')" class="text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all">👌</button>
+                        <button onclick="selectEmoji('🔥')" class="text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all">🔥</button>
+                        <button onclick="selectEmoji('💯')" class="text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all">💯</button>
+                        <button onclick="selectEmoji('🌟')" class="text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all">🌟</button>
+                        <button onclick="selectEmoji('❤️')" class="text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all">❤️</button>
+                    </div>
+                </div>
+
+                <!-- Comment -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">💭 Comments (Optional)</label>
+                    <textarea placeholder="Tell us what you think..." class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none" rows="3"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button onclick="submitRating()" class="w-full btn-game btn-primary text-lg py-4">
+                    Submit Rating 😋
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRating = {
+            taste: 5,
+            texture: 5,
+            ingredients: 5,
+            presentation: 5,
+            bonus: 5,
+            emoji: '😋'
+        };
+
+        function getEmojiForValue(val) {
+            if (val <= 3) return '😞';
+            if (val <= 5) return '😐';
+            if (val <= 7) return '🙂';
+            if (val <= 9) return '😊';
+            return '🤩';
+        }
+
+        function updateSlider(type, value) {
+            currentRating[type] = parseInt(value);
+            document.getElementById(type + 'Value').textContent = value;
+            document.getElementById(type + 'Emoji').textContent = getEmojiForValue(parseInt(value));
+            
+            // Update average score
+            const average = Math.round((currentRating.taste + currentRating.texture + currentRating.ingredients + currentRating.presentation + currentRating.bonus) / 5);
+            document.getElementById('averageScore').textContent = average + '/10';
+        }
+
+        function selectEmoji(emoji) {
+            currentRating.emoji = emoji;
+            // Update all emoji buttons
+            document.querySelectorAll('[onclick^="selectEmoji"]').forEach(btn => {
+                btn.className = 'text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all';
+            });
+            // Highlight selected emoji
+            event.target.className = 'text-2xl p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all bg-orange-100 scale-110 shadow-lg';
+        }
+
+        function showRatingModal(camperoName) {
+            document.getElementById('camperoName').textContent = camperoName;
+            document.getElementById('ratingModal').classList.remove('hidden');
+        }
+
+        function hideRatingModal() {
+            document.getElementById('ratingModal').classList.add('hidden');
+        }
+
+        function submitRating() {
+            // Show confetti effect
+            const confetti = document.createElement('div');
+            confetti.className = 'fixed inset-0 pointer-events-none z-40';
+            confetti.innerHTML = `
+                <div class="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-orange-400/20 to-red-400/20 animate-pulse"></div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl animate-bounce">🎉</div>
+            `;
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                document.body.removeChild(confetti);
+            }, 3000);
+            
+            hideRatingModal();
+            alert('Rating submitted successfully! 🎉');
+        }
+    </script>
+</body>
+</html>

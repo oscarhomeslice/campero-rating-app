@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Poppins', Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom gradient backgrounds */
+.bg-campero-gradient {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
+}
+
+.bg-secondary-gradient {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0f766e 100%);
+}
+
+.bg-success-gradient {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+}
+
+/* Game-like button styles */
+.btn-game {
+  @apply px-6 py-3 rounded-xl font-game font-semibold text-white shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95;
+}
+
+.btn-primary {
+  @apply btn-game bg-campero-gradient hover:shadow-orange-500/25;
+}
+
+.btn-secondary {
+  @apply btn-game bg-secondary-gradient hover:shadow-teal-500/25;
+}
+
+/* Card styles */
+.card-game {
+  @apply bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl;
+}
+
+/* Slider styles */
+.slider-track {
+  @apply w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer;
+}
+
+.slider-track::-webkit-slider-thumb {
+  @apply appearance-none w-6 h-6 bg-primary-500 rounded-full cursor-pointer shadow-lg;
+}
+
+.slider-track::-moz-range-thumb {
+  @apply w-6 h-6 bg-primary-500 rounded-full cursor-pointer shadow-lg border-none;
+}
