@@ -2,52 +2,40 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import RatingSlider from './RatingSlider';
 
-interface CamperoRatingModalProps {
+interface RestaurantRatingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  camperoName: string;
-  camperoId: string;
+  restaurantName: string;
+  restaurantId: string;
   day: number;
-  onSubmit: (rating: CamperoRating) => void;
+  onSubmit: (rating: RestaurantRating) => void;
   alreadyRated?: boolean;
 }
 
-interface CamperoRating {
-  taste: number;
-  texture: number;
-  ingredients: number;
-  presentation: number;
-  bonus: number;
-  emoji: string;
+interface RestaurantRating {
+  rating: number;
   comment: string;
 }
 
-const emojiOptions = ['😍', '🤤', '😋', '👌', '🔥', '💯', '🌟', '❤️'];
-
-export default function CamperoRatingModal({ 
+export default function RestaurantRatingModal({ 
   isOpen, 
   onClose, 
-  camperoName,
-  camperoId,
+  restaurantName,
+  restaurantId,
   day,
   onSubmit,
   alreadyRated = false
-}: CamperoRatingModalProps) {
+}: RestaurantRatingModalProps) {
   const { user } = useAuth();
-  const [rating, setRating] = useState<CamperoRating>({
-    taste: 5,
-    texture: 5,
-    ingredients: 5,
-    presentation: 5,
-    bonus: 5,
-    emoji: '😋',
+  const [rating, setRating] = useState<RestaurantRating>({
+    rating: 5,
     comment: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hoveredStar, setHoveredStar] = useState<number | null>(null);
 
   const handleSubmit = async () => {
     if (!user) {
@@ -56,7 +44,7 @@ export default function CamperoRatingModal({
     }
 
     if (alreadyRated) {
-      setError('You have already rated this campero today');
+      setError('You have already rated this restaurant today');
       return;
     }
 
@@ -64,21 +52,15 @@ export default function CamperoRatingModal({
     setError(null);
     
     try {
-      const response = await fetch('/api/rating/campero', {
+      const response = await fetch('/api/rating/restaurant', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId: user.id,
-          camperoId,
-          scores: {
-            taste: rating.taste,
-            texture: rating.texture,
-            ingredients: rating.ingredients,
-            presentation: rating.presentation,
-            bonus: rating.bonus
-          },
+          restaurantId,
+          rating: rating.rating,
           comment: rating.comment || null,
           day
         })
@@ -96,30 +78,34 @@ export default function CamperoRatingModal({
       
       // Reset form
       setRating({
-        taste: 5,
-        texture: 5,
-        ingredients: 5,
-        presentation: 5,
-        bonus: 5,
-        emoji: '😋',
+        rating: 5,
         comment: ''
       });
 
     } catch (error) {
-      console.error('Error submitting rating:', error);
+      console.error('Error submitting restaurant rating:', error);
       setError(error instanceof Error ? error.message : 'Failed to submit rating');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const updateRating = (field: keyof CamperoRating, value: number | string) => {
-    setRating(prev => ({ ...prev, [field]: value }));
+  const handleStarClick = (starValue: number) => {
+    if (!alreadyRated) {
+      setRating(prev => ({ ...prev, rating: starValue }));
+    }
   };
 
-  const averageScore = Math.round(
-    (rating.taste + rating.texture + rating.ingredients + rating.presentation + rating.bonus) / 5
-  );
+  const handleStarHover = (starValue: number | null) => {
+    if (!alreadyRated) {
+      setHoveredStar(starValue);
+    }
+  };
+
+  const getStarDisplay = (starIndex: number) => {
+    const displayRating = hoveredStar !== null ? hoveredStar : rating.rating;
+    return starIndex <= displayRating;
+  };
 
   if (!isOpen) return null;
 
@@ -130,8 +116,8 @@ export default function CamperoRatingModal({
         <div className="sticky top-0 bg-gradient-to-r from-orange-500 to-red-500 text-white p-6 rounded-t-3xl">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold">Rate Campero</h2>
-              <p className="text-orange-100">{camperoName}</p>
+              <h2 className="text-xl font-bold">Rate Restaurant</h2>
+              <p className="text-orange-100">{restaurantName}</p>
             </div>
             <button 
               onClick={onClose}
@@ -141,10 +127,10 @@ export default function CamperoRatingModal({
             </button>
           </div>
           
-          {/* Average Score Display */}
+          {/* Rating Display */}
           <div className="mt-4 text-center">
-            <div className="text-3xl font-bold">{averageScore}/5</div>
-            <div className="text-sm text-orange-100">Average Score</div>
+            <div className="text-3xl font-bold">{rating.rating}/5</div>
+            <div className="text-sm text-orange-100">Overall Experience</div>
           </div>
         </div>
 
@@ -160,89 +146,58 @@ export default function CamperoRatingModal({
           {/* Already Rated Message */}
           {alreadyRated && (
             <div className="mb-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded-lg">
-              ✅ You have already rated this campero today!
+              ✅ You have already rated this restaurant today!
             </div>
           )}
 
-          <RatingSlider
-            label="Taste"
-            value={rating.taste}
-            onChange={(value) => updateRating('taste', value)}
-            emoji="👅"
-            disabled={alreadyRated}
-          />
-          
-          <RatingSlider
-            label="Texture"
-            value={rating.texture}
-            onChange={(value) => updateRating('texture', value)}
-            emoji="🤏"
-            disabled={alreadyRated}
-          />
-          
-          <RatingSlider
-            label="Ingredients"
-            value={rating.ingredients}
-            onChange={(value) => updateRating('ingredients', value)}
-            emoji="🥬"
-            disabled={alreadyRated}
-          />
-          
-          <RatingSlider
-            label="Presentation"
-            value={rating.presentation}
-            onChange={(value) => updateRating('presentation', value)}
-            emoji="🎨"
-            disabled={alreadyRated}
-          />
-          
-          <RatingSlider
-            label="Bonus Points"
-            value={rating.bonus}
-            onChange={(value) => updateRating('bonus', value)}
-            emoji="⭐"
-            disabled={alreadyRated}
-          />
-
-          {/* Emoji Picker */}
+          {/* Star Rating */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              🎭 Your Reaction
+            <label className={`block text-sm font-semibold mb-3 ${
+              alreadyRated ? 'text-gray-400' : 'text-gray-700'
+            }`}>
+              🌟 Overall Experience
             </label>
-            <div className="flex flex-wrap gap-2">
-              {emojiOptions.map((emoji) => (
+            <div className="flex justify-center space-x-2">
+              {[1, 2, 3, 4, 5].map((starValue) => (
                 <button
-                  key={emoji}
-                  onClick={() => !alreadyRated && updateRating('emoji', emoji)}
+                  key={starValue}
+                  onClick={() => handleStarClick(starValue)}
+                  onMouseEnter={() => handleStarHover(starValue)}
+                  onMouseLeave={() => handleStarHover(null)}
                   disabled={alreadyRated}
-                  className={`text-2xl p-2 rounded-lg transition-all ${
+                  className={`text-4xl transition-all duration-200 ${
                     alreadyRated 
-                      ? 'opacity-50 cursor-not-allowed'
-                      : rating.emoji === emoji 
-                        ? 'bg-orange-100 scale-110 shadow-lg' 
-                        : 'hover:bg-gray-100 hover:scale-105'
+                      ? 'cursor-not-allowed opacity-50'
+                      : 'cursor-pointer hover:scale-110'
                   }`}
                 >
-                  {emoji}
+                  {getStarDisplay(starValue) ? '⭐' : '☆'}
                 </button>
               ))}
+            </div>
+            <div className="text-center mt-2">
+              <span className={`text-sm ${alreadyRated ? 'text-gray-400' : 'text-gray-600'}`}>
+                {hoveredStar !== null ? hoveredStar : rating.rating} out of 5 stars
+              </span>
             </div>
           </div>
 
           {/* Comment */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold mb-2 ${
+              alreadyRated ? 'text-gray-400' : 'text-gray-700'
+            }`}>
               💭 Comments (Optional)
             </label>
             <textarea
               value={rating.comment}
-              onChange={(e) => !alreadyRated && updateRating('comment', e.target.value)}
-              placeholder="Tell us what you think..."
+              onChange={(e) => !alreadyRated && setRating(prev => ({ ...prev, comment: e.target.value }))}
+              placeholder="Tell us about your experience..."
               disabled={alreadyRated}
               className={`w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none ${
                 alreadyRated ? 'bg-gray-100 cursor-not-allowed' : ''
               }`}
-              rows={3}
+              rows={4}
             />
           </div>
 
@@ -261,7 +216,7 @@ export default function CamperoRatingModal({
                   <span>Submitting...</span>
                 </div>
               ) : (
-                `Submit Rating ${rating.emoji}`
+                `Submit Rating ⭐`
               )}
             </button>
           )}

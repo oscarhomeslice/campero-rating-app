@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import CamperoRatingModal from '@/components/CamperoRatingModal';
+import RestaurantRatingModal from '@/components/RestaurantRatingModal';
 
 interface CamperoRating {
   taste: number;
@@ -11,6 +12,11 @@ interface CamperoRating {
   presentation: number;
   bonus: number;
   emoji: string;
+  comment: string;
+}
+
+interface RestaurantRating {
+  rating: number;
   comment: string;
 }
 
@@ -40,8 +46,10 @@ export default function Home() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [camperos, setCamperos] = useState<Campero[]>([]);
   const [ratingsCompleted, setRatingsCompleted] = useState(0);
+  const [restaurantRated, setRestaurantRated] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
-  const [selectedCampero, setSelectedCampero] = useState<string>('');
+  const [isRestaurantModalOpen, setIsRestaurantModalOpen] = useState(false);
+  const [selectedCampero, setSelectedCampero] = useState<Campero | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
 
@@ -74,11 +82,15 @@ export default function Home() {
       if (restaurantData.success && camperosData.success) {
         setRestaurant(restaurantData.data);
         
-        // Add rated status to camperos (mock for now)
-        const camperosWithStatus = camperosData.data.map((campero: Campero, index: number) => ({
-          ...campero,
-          rated: index < 2 // Mock: first 2 are rated
-        }));
+        // Check which camperos have been rated
+        const camperosWithStatus = await Promise.all(
+          camperosData.data.map(async (campero: Campero) => {
+            // In a real app, this would check the rating API
+            // For now, simulate some ratings
+            const rated = Math.random() > 0.6; // 40% chance of being rated
+            return { ...campero, rated };
+          })
+        );
         
         setCamperos(camperosWithStatus);
         setCurrentDay(restaurantData.data.dayNumber);
@@ -86,6 +98,9 @@ export default function Home() {
         // Calculate ratings completed
         const completed = camperosWithStatus.filter((c: Campero) => c.rated).length;
         setRatingsCompleted(completed);
+        
+        // Check if restaurant is rated (simulate)
+        setRestaurantRated(Math.random() > 0.7); // 30% chance
       }
     } catch (error) {
       console.error('Error fetching daily content:', error);
@@ -94,31 +109,41 @@ export default function Home() {
     }
   };
 
-  const handleRateCampero = (camperoName: string) => {
-    setSelectedCampero(camperoName);
-    setIsRatingModalOpen(true);
+  const handleRateCampero = (campero: Campero) => {
+    if (!campero.rated) {
+      setSelectedCampero(campero);
+      setIsRatingModalOpen(true);
+    }
   };
 
-  const handleRatingSubmit = async (rating: CamperoRating) => {
-    console.log('Rating submitted:', { campero: selectedCampero, rating });
+  const handleRateRestaurant = () => {
+    if (!restaurantRated) {
+      setIsRestaurantModalOpen(true);
+    }
+  };
+
+  const handleCamperoRatingSubmit = async (rating: CamperoRating) => {
+    console.log('Campero rating submitted:', { campero: selectedCampero?.name, rating });
     
-    // Here you would save to InsForge database
-    try {
-      const token = localStorage.getItem('accessToken');
-      const userId = localStorage.getItem('userId');
-      
-      // For now, just update the UI
+    if (selectedCampero) {
+      // Update the campero as rated
       setCamperos(prev => 
         prev.map(c => 
-          c.name === selectedCampero ? { ...c, rated: true } : c
+          c.id === selectedCampero.id ? { ...c, rated: true } : c
         )
       );
       setRatingsCompleted(prev => prev + 1);
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 3000);
-    } catch (error) {
-      console.error('Failed to save rating:', error);
     }
+  };
+
+  const handleRestaurantRatingSubmit = async (rating: RestaurantRating) => {
+    console.log('Restaurant rating submitted:', { restaurant: restaurant?.name, rating });
+    
+    setRestaurantRated(true);
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3000);
   };
 
   const formatMeetingTime = (isoString: string) => {
@@ -178,21 +203,24 @@ export default function Home() {
           <div className="mb-4">
             <div className="flex justify-between text-sm text-gray-600 mb-2">
               <span>Today's Progress</span>
-              <span>{ratingsCompleted}/{camperos.length}</span>
+              <span>{ratingsCompleted}/{camperos.length} camperos + {restaurantRated ? '1' : '0'}/1 restaurant</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div 
                 className="bg-gradient-to-r from-orange-500 to-red-500 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${camperos.length > 0 ? (ratingsCompleted / camperos.length) * 100 : 0}%` }}
+                style={{ 
+                  width: `${camperos.length > 0 ? 
+                    ((ratingsCompleted + (restaurantRated ? 1 : 0)) / (camperos.length + 1)) * 100 : 0}%` 
+                }}
               ></div>
             </div>
           </div>
           
           <p className="text-sm text-gray-500">
-            {camperos.length - ratingsCompleted} camperos left to rate!
+            {camperos.length - ratingsCompleted} camperos and {restaurantRated ? '0' : '1'} restaurant left to rate!
           </p>
           
-          {ratingsCompleted === camperos.length && camperos.length > 0 && (
+          {ratingsCompleted === camperos.length && restaurantRated && camperos.length > 0 && (
             <div className="mt-4 p-3 bg-green-100 rounded-xl">
               <p className="text-green-800 font-semibold">🎉 All done for today!</p>
             </div>
@@ -210,10 +238,23 @@ export default function Home() {
             <div className="bg-white/30 rounded-xl p-4">
               <h4 className="font-semibold text-gray-800">{restaurant.name}</h4>
               <p className="text-sm text-gray-600 mb-2">{restaurant.description}</p>
-              <p className="text-sm text-gray-600">🕐 Meeting at {formatMeetingTime(restaurant.meetingTime)}</p>
-              <button className="mt-3 text-sm text-orange-600 hover:text-orange-700 font-medium">
-                📍 View on Map
-              </button>
+              <p className="text-sm text-gray-600 mb-3">🕐 Meeting at {formatMeetingTime(restaurant.meetingTime)}</p>
+              
+              <div className="flex space-x-2">
+                <button className="text-sm text-orange-600 hover:text-orange-700 font-medium">
+                  📍 View on Map
+                </button>
+                <button 
+                  onClick={handleRateRestaurant}
+                  className={`text-sm font-medium px-3 py-1 rounded-full ${
+                    restaurantRated 
+                      ? 'bg-green-100 text-green-700 cursor-default' 
+                      : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                  }`}
+                >
+                  {restaurantRated ? '✅ Rated' : '⭐ Rate Restaurant'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -245,7 +286,7 @@ export default function Home() {
                 </p>
               </div>
               <button 
-                onClick={() => handleRateCampero(campero.name)}
+                onClick={() => handleRateCampero(campero)}
                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   campero.rated 
                     ? 'bg-green-100 text-green-700 cursor-default' 
@@ -260,13 +301,33 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Rating Modal */}
-      <CamperoRatingModal
-        isOpen={isRatingModalOpen}
-        onClose={() => setIsRatingModalOpen(false)}
-        camperoName={selectedCampero}
-        onSubmit={handleRatingSubmit}
-      />
+      {/* Rating Modals */}
+      {selectedCampero && (
+        <CamperoRatingModal
+          isOpen={isRatingModalOpen}
+          onClose={() => {
+            setIsRatingModalOpen(false);
+            setSelectedCampero(null);
+          }}
+          camperoName={selectedCampero.name}
+          camperoId={selectedCampero.id}
+          day={currentDay}
+          onSubmit={handleCamperoRatingSubmit}
+          alreadyRated={selectedCampero.rated}
+        />
+      )}
+
+      {restaurant && (
+        <RestaurantRatingModal
+          isOpen={isRestaurantModalOpen}
+          onClose={() => setIsRestaurantModalOpen(false)}
+          restaurantName={restaurant.name}
+          restaurantId={restaurant.id}
+          day={currentDay}
+          onSubmit={handleRestaurantRatingSubmit}
+          alreadyRated={restaurantRated}
+        />
+      )}
     </>
   );
 }
