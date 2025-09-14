@@ -19,7 +19,7 @@ export default function Sidebar({ isOpen, onClose, currentPath }: SidebarProps) 
   ];
 
   // Add admin link if user is admin
-  if (user?.isAdmin) {
+  if (user?.role === "admin") {
     navigationItems.push({ name: 'Admin', href: '/admin', icon: '⚙️' });
   }
 
