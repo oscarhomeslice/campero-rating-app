@@ -11,7 +11,7 @@ export default function Footer() {
           <div className="flex items-center space-x-4 text-sm text-gray-500">
             <span>Day 1 of 7</span>
             <span>•</span>
-            <span>🌮 Rate & Enjoy!</span>
+            <span><img src="https://i.postimg.cc/SQM1c9Ht/El-Camperon-transparent-1.webp" alt="El Camperón" className="inline-block h-4 w-4 mr-1" /> Rate & Enjoy!</span>
           </div>
         </div>
       </div>
