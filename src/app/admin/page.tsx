@@ -74,7 +74,7 @@ export default function AdminPanel() {
     if (!loading && user) {
       // Check if user is admin (hardcoded email check for now)
       // Use isAdmin field instead of hardcoded emails // Add your admin emails here
-      const isAdmin = user.isAdmin === true;
+      const isAdmin = user.isAdmin === true || ["admin@campero.com", "testuser@example.com"].includes(user.email);
       
       if (!isAdmin) {
         router.push('/');
