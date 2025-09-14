@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import LayoutWrapper from "@/components/LayoutWrapper";
 
 export const metadata: Metadata = {
   title: "Campero Rating Competition",
@@ -15,9 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-teal-50">
         <AuthProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
+          {children}
         </AuthProvider>
       </body>
     </html>
