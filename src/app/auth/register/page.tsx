@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -36,9 +37,31 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 w-full max-w-md border border-white/20">
+        {/* Logo */}
+        <div className="text-center mb-4">
+          <Image
+            src="https://i.postimg.cc/VkLFZ0Hw/Logo-no-border-1.webp"
+            alt="Choque Campero Logo"
+            width={240}
+            height={80}
+            className="mx-auto max-w-[240px] h-auto"
+          />
+        </div>
+
+        {/* Mascot */}
+        <div className="text-center mb-6">
+          <Image
+            src="https://i.postimg.cc/SQM1c9Ht/El-Camperon-transparent-1.webp"
+            alt="El Camperón"
+            width={160}
+            height={160}
+            className="mx-auto max-w-[160px] h-auto"
+          />
+        </div>
+
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mb-2">
-            🌮 Join the Competition!
+            Join the Competition!
           </h1>
           <p className="text-gray-600">Create your account to start rating camperos</p>
         </div>

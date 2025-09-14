@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="px-4 py-6">
         <div className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
           <div className="text-sm text-gray-600">
-            © 2025 Campero Competition. Made with ❤️ for food lovers.
+            © 2025 Choque Campero. Made with ❤️ for food lovers.
           </div>
           <div className="flex items-center space-x-4 text-sm text-gray-500">
             <span>Day 1 of 7</span>

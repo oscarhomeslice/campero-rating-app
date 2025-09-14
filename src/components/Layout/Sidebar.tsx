@@ -80,7 +80,7 @@ export default function Sidebar({ isOpen, onClose, currentPath }: SidebarProps) 
           {/* Sidebar footer */}
           <div className="p-4 border-t border-gray-200">
             <div className="text-xs text-gray-500 text-center">
-              Campero Competition v1.0
+              Choque Campero v1.0
             </div>
           </div>
         </div>

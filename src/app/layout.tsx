@@ -4,8 +4,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import LayoutWrapper from "@/components/LayoutWrapper";
 
 export const metadata: Metadata = {
-  title: "Campero Rating Competition",
-  description: "Rate the best camperos in town! 7-day food competition.",
+  title: "Choque Campero",
+  description: "Rate the best camperos in town! 7-day Choque Campero competition.",
 };
 
 export default function RootLayout({
@@ -15,6 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="https://i.postimg.cc/t4MFrSxd/favicon-96x96.png" type="image/png" sizes="96x96" />
+      </head>
       <body>
         <AuthProvider>
           <LayoutWrapper>{children}</LayoutWrapper>
