@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="https://i.postimg.cc/t4MFrSxd/favicon-96x96.png" type="image/png" sizes="96x96" />
+        <link rel="icon" href="/images/favicon.svg" type="image/png" sizes="96x96" />
       </head>
       <body>
         <AuthProvider>

@@ -159,7 +159,7 @@ export default function Home() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="mb-4"><img src="https://i.postimg.cc/SQM1c9Ht/El-Camperon-transparent-1.webp" alt="El Camperón" className="mx-auto h-16 w-16" /></div>
+          <div className="mb-4"><img src="/images/mascot.svg" alt="El Camperón" className="mx-auto h-16 w-16" /></div>
           <p className="text-gray-600">Loading daily content...</p>
         </div>
       </div>

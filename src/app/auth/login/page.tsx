@@ -33,7 +33,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-4">
           <Image
-            src="https://i.postimg.cc/VkLFZ0Hw/Logo-no-border-1.webp"
+            src="/images/logo.svg"
             alt="Choque Campero Logo"
             width={240}
             height={80}
@@ -44,7 +44,7 @@ export default function LoginPage() {
         {/* Mascot */}
         <div className="text-center mb-6">
           <Image
-            src="https://i.postimg.cc/SQM1c9Ht/El-Camperon-transparent-1.webp"
+            src="/images/mascot.svg"
             alt="El Camperón"
             width={160}
             height={160}

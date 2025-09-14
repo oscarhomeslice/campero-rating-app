@@ -1,0 +1,11 @@
+<svg width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="80" cy="80" r="70" fill="#f97316"/>
+  <circle cx="60" cy="60" r="8" fill="white"/>
+  <circle cx="100" cy="60" r="8" fill="white"/>
+  <circle cx="60" cy="60" r="4" fill="black"/>
+  <circle cx="100" cy="60" r="4" fill="black"/>
+  <path d="M 60 100 Q 80 120 100 100" stroke="white" stroke-width="4" fill="none"/>
+  <text x="80" y="140" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
+    EL CAMPERÓN
+  </text>
+</svg>

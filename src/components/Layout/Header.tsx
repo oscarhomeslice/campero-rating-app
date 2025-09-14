@@ -24,7 +24,7 @@ export default function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
 
         {/* Logo/Title */}
         <div className="flex items-center space-x-2">
-          <img src="https://i.postimg.cc/SQM1c9Ht/El-Camperon-transparent-1.webp" alt="El Camperón" className="inline-block h-8 w-8" />
+          <img src="/images/mascot.svg" alt="El Camperón" className="inline-block h-8 w-8" />
           <h1 className="text-xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
             Choque Campero
           </h1>
