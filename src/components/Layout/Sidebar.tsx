@@ -20,7 +20,7 @@ export default function Sidebar({ isOpen, onClose, currentPath }: SidebarProps) 
 
   // Add admin link if user is admin
   if (user?.isAdmin === true || ["admin@campero.com", "testuser@example.com"].includes(user?.email || "")) {
-    navigationItems.push({ name: 'Admin', href: '/admin', icon: '⚙️' });
+    navigationItems.push({ name: 'Admin', href: '/dashboard', icon: '⚙️' });
   }
 
   return (

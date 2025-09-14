@@ -34,11 +34,24 @@ interface Rating {
   day: number;
   timestamp: string;
 }
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  isAdmin: boolean;
+}
+
+interface EventState {
+  id: string;
+  currentDay: number;
+  startDate: string;
+  endDate: string;
+}
 
 export default function AdminPanel() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'restaurant' | 'campero' | 'ratings'>('restaurant');
+  const [activeTab, setActiveTab] = useState<'restaurant' | 'campero' | 'ratings' | 'users' | 'events'>('restaurant');
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +75,13 @@ export default function AdminPanel() {
     imageUrl: '',
     restaurantId: '',
     dayNumber: 1
+  });
+  const [users, setUsers] = useState<User[]>([]);
+  const [eventState, setEventState] = useState<EventState | null>(null);
+  const [eventForm, setEventForm] = useState({
+    currentDay: 1,
+    startDate: '',
+    endDate: ''
   });
 
   // Check admin access
@@ -90,10 +110,18 @@ export default function AdminPanel() {
     }
   }, [user]);
 
-  // Fetch ratings when ratings tab is active
+  // Fetch data based on active tab
   useEffect(() => {
-    if (activeTab === 'ratings' && user) {
-      fetchRatings();
+    if (user) {
+      if (activeTab === 'restaurant' || activeTab === 'campero') {
+        fetchRestaurants();
+      } else if (activeTab === 'ratings') {
+        fetchRatings();
+      } else if (activeTab === 'users') {
+        fetchUsers();
+      } else if (activeTab === 'events') {
+        fetchEventState();
+      }
     }
   }, [activeTab, user]);
 
@@ -124,6 +152,76 @@ export default function AdminPanel() {
       }
     } catch (error) {
       console.error('Error fetching ratings:', error);
+    }
+  };
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('/api/admin/users');
+      const data = await response.json();
+      if (data.success) {
+        setUsers(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  const fetchEventState = async () => {
+    try {
+      const response = await fetch('/api/admin/event-state');
+      const data = await response.json();
+      if (data.success) {
+        setEventState(data.data);
+        setEventForm({
+          currentDay: data.data.currentDay,
+          startDate: data.data.startDate.slice(0, 16),
+          endDate: data.data.endDate.slice(0, 16)
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching event state:', error);
+    }
+  };
+
+  const handleUserRoleToggle = async (userId: string, currentIsAdmin: boolean) => {
+    try {
+      const response = await fetch('/api/admin/user-role', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, isAdmin: !currentIsAdmin })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessage({ type: 'success', text: data.message });
+        fetchUsers();
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to update user role' });
+    }
+  };
+
+  const handleEventSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/admin/event-state', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentDay: parseInt(eventForm.currentDay.toString()),
+          startDate: new Date(eventForm.startDate).toISOString(),
+          endDate: new Date(eventForm.endDate).toISOString()
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessage({ type: 'success', text: data.message });
+        setEventState(data.data);
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to update event settings' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -285,6 +383,26 @@ export default function AdminPanel() {
               }`}
             >
               View Ratings ({ratings.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'users'
+                  ? 'border-orange-500 text-orange-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              User Management ({users.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('events')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'events'
+                  ? 'border-orange-500 text-orange-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Event Settings
             </button>
           </nav>
         </div>
