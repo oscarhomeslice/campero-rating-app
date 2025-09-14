@@ -14,15 +14,36 @@ interface CamperoRating {
   comment: string;
 }
 
+interface Restaurant {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  meetingTime: string;
+  dayNumber: number;
+}
+
+interface Campero {
+  id: string;
+  name: string;
+  tags: string[];
+  imageUrl: string;
+  restaurantId: string;
+  dayNumber: number;
+  rated?: boolean;
+}
+
 export default function Home() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
-  const [currentDay] = useState(1);
-  const [ratingsCompleted, setRatingsCompleted] = useState(2);
-  const [totalCamperos] = useState(5);
+  const [currentDay, setCurrentDay] = useState(1);
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [camperos, setCamperos] = useState<Campero[]>([]);
+  const [ratingsCompleted, setRatingsCompleted] = useState(0);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [selectedCampero, setSelectedCampero] = useState<string>('');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -31,28 +52,47 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-4">🌮</div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // Fetch daily content
+  useEffect(() => {
+    if (user) {
+      fetchDailyContent();
+    }
+  }, [user]);
 
-  if (!user) {
-    return null; // Will redirect to login
-  }
-
-  const [camperos, setCamperos] = useState([
-    { id: 1, name: 'Campero Clásico', rated: true },
-    { id: 2, name: 'Campero Especial', rated: true },
-    { id: 3, name: 'Campero Supremo', rated: false },
-    { id: 4, name: 'Campero Vegetariano', rated: false },
-    { id: 5, name: 'Campero Picante', rated: false },
-  ]);
+  const fetchDailyContent = async () => {
+    try {
+      setDataLoading(true);
+      
+      // Fetch restaurant data
+      const restaurantResponse = await fetch('/api/today/restaurant');
+      const restaurantData = await restaurantResponse.json();
+      
+      // Fetch camperos data
+      const camperosResponse = await fetch('/api/today/camperos');
+      const camperosData = await camperosResponse.json();
+      
+      if (restaurantData.success && camperosData.success) {
+        setRestaurant(restaurantData.data);
+        
+        // Add rated status to camperos (mock for now)
+        const camperosWithStatus = camperosData.data.map((campero: Campero, index: number) => ({
+          ...campero,
+          rated: index < 2 // Mock: first 2 are rated
+        }));
+        
+        setCamperos(camperosWithStatus);
+        setCurrentDay(restaurantData.data.dayNumber);
+        
+        // Calculate ratings completed
+        const completed = camperosWithStatus.filter((c: Campero) => c.rated).length;
+        setRatingsCompleted(completed);
+      }
+    } catch (error) {
+      console.error('Error fetching daily content:', error);
+    } finally {
+      setDataLoading(false);
+    }
+  };
 
   const handleRateCampero = (camperoName: string) => {
     setSelectedCampero(camperoName);
@@ -80,6 +120,30 @@ export default function Home() {
       console.error('Failed to save rating:', error);
     }
   };
+
+  const formatMeetingTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
+  if (loading || dataLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">🌮</div>
+          <p className="text-gray-600">Loading daily content...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
 
   return (
     <>
@@ -114,21 +178,21 @@ export default function Home() {
           <div className="mb-4">
             <div className="flex justify-between text-sm text-gray-600 mb-2">
               <span>Today's Progress</span>
-              <span>{ratingsCompleted}/{totalCamperos}</span>
+              <span>{ratingsCompleted}/{camperos.length}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div 
                 className="bg-gradient-to-r from-orange-500 to-red-500 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${(ratingsCompleted / totalCamperos) * 100}%` }}
+                style={{ width: `${camperos.length > 0 ? (ratingsCompleted / camperos.length) * 100 : 0}%` }}
               ></div>
             </div>
           </div>
           
           <p className="text-sm text-gray-500">
-            {totalCamperos - ratingsCompleted} camperos left to rate!
+            {camperos.length - ratingsCompleted} camperos left to rate!
           </p>
           
-          {ratingsCompleted === totalCamperos && (
+          {ratingsCompleted === camperos.length && camperos.length > 0 && (
             <div className="mt-4 p-3 bg-green-100 rounded-xl">
               <p className="text-green-800 font-semibold">🎉 All done for today!</p>
             </div>
@@ -137,21 +201,23 @@ export default function Home() {
       </div>
 
       {/* Today's Restaurant */}
-      <div className="max-w-md mx-auto mb-8">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-white/20">
-          <h3 className="text-xl font-bold text-gray-800 mb-3">
-            📍 Today's Location
-          </h3>
-          <div className="bg-white/30 rounded-xl p-4">
-            <h4 className="font-semibold text-gray-800">El Campero Dorado</h4>
-            <p className="text-sm text-gray-600 mb-2">Calle Principal 123</p>
-            <p className="text-sm text-gray-600">�� Meeting at 12:30 PM</p>
-            <button className="mt-3 text-sm text-orange-600 hover:text-orange-700 font-medium">
-              📍 View on Map
-            </button>
+      {restaurant && (
+        <div className="max-w-md mx-auto mb-8">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-white/20">
+            <h3 className="text-xl font-bold text-gray-800 mb-3">
+              📍 Today's Location
+            </h3>
+            <div className="bg-white/30 rounded-xl p-4">
+              <h4 className="font-semibold text-gray-800">{restaurant.name}</h4>
+              <p className="text-sm text-gray-600 mb-2">{restaurant.description}</p>
+              <p className="text-sm text-gray-600">🕐 Meeting at {formatMeetingTime(restaurant.meetingTime)}</p>
+              <button className="mt-3 text-sm text-orange-600 hover:text-orange-700 font-medium">
+                📍 View on Map
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Campero Cards */}
       <div className="max-w-md mx-auto space-y-4 mb-8">
@@ -162,9 +228,19 @@ export default function Home() {
         {camperos.map((campero) => (
           <div key={campero.id} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 border border-white/20">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="flex-1">
                 <h4 className="font-semibold text-gray-800">{campero.name}</h4>
-                <p className="text-sm text-gray-600">
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {campero.tags.map((tag, index) => (
+                    <span 
+                      key={index}
+                      className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-600 mt-2">
                   {campero.rated ? '✅ Rated' : '⏳ Pending'}
                 </p>
               </div>
